@@ -1,12 +1,13 @@
 var mysql = require('mysql2');
 var mysql = require('mysql2/promise');
+require('dotenv').config();
 var db = '';
 
 try {
     db = mysql.createPool({
-        host : '140.238.12.42',
-        user : 'opensource',
-        password : 'opensourceteam2',
+        host : process.env.DB_HOST,
+        user : process.env.DB_USER,
+        password : process.env.DB_PASS,
         database : 'school'
     })
 } catch (err) {
