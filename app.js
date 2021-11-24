@@ -6,13 +6,10 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 app.get('/', function (req, res) {
-    ret = {'tue': [{'start': '15:00', 'end': '15:50', 'loc': [8, '106'], 'prof': 16, 'type': 1}]}
-    ret = JSON.stringify(ret)
-    console.log(ret)
-    res.send(ret);
+    res.send("Helllo");
 });
 
-app.use('/subject', require('./subject'));
+app.use('/course', require('./course'));
 
 
 // catch 404 and forward to error handler
