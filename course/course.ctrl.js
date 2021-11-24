@@ -34,6 +34,8 @@ const data = async function(req, res) {
 
     for (let course of courses) {
         let { subject, course_type1:type1, course_type2:type2, department_name, number, subject_name, credit, credit_planned, day, start, end, professor, location_name, building, room, room_detail, certification_type: cert_type, certification_name: cert_name } = course;
+        start = start.slice(0,5);
+        end = end.slice(0,5);
         let b = await int_to_building(building);
 
         if (refined_courses[course.subject]) {
@@ -44,8 +46,14 @@ const data = async function(req, res) {
             
             let is_in = false;
             for (let timetable of refined_courses[course.subject].timetables) {
-                let { day: t_day, start: t_start } = timetable;
-                if (t_day==day && t_start==start) {
+                let { day: t_day, start: t_start, end: t_end } = timetable;
+                if (t_day==day) {
+                    if (t_start==start) {
+                        is_in = true;
+                        break;
+                    }
+                    timetable.start = Number(t_start.slice(0,2)) > Number(start.slice(0,2)) ? start : t_start;
+                    timetable.end = Number(t_end.slice(0,2)) < Number(end.slice(0,2)) ? end : t_end;
                     is_in = true;
                     break;
                 }
