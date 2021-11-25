@@ -6,7 +6,7 @@ const data = async function(req, res) {
     let { department } = req.query;
     // department = 8007;
     let SELECT_course_sql = 'SELECT c.subject,\
-                        t1.name AS course_type1, t2.name AS course_type2,\
+                        c.type1 AS course_type1, c.type2 AS course_type2,\
                         d.name AS department_name,\
                         s.number, s.name AS subject_name, s.credit, s.credit_planned,\
                         t.day, t.start, t.end,\
@@ -14,8 +14,6 @@ const data = async function(req, res) {
                         l.name AS location_name, l.building, l.room, l.room_detail,\
                         cd.type AS certification_type, cd.name AS certification_name\
                     FROM `courses` AS c\
-                    JOIN `course_type1_details` AS t1 ON c.type1=t1.idx\
-                    JOIN `course_type2_details` AS t2 ON c.type2=t2.idx\
                     JOIN `departments` AS d ON c.department=d.idx\
                     JOIN `subjects` AS s ON c.subject=s.idx\
                     JOIN `timetables` AS t ON t.subject=s.idx\
@@ -62,15 +60,16 @@ const data = async function(req, res) {
                 refined_courses[course.subject].timetables.push({ idx: len, day: day, start:start, end: end, loc: { location: b+" "+(building==0?"":("00"+building).slice(-2))+(room==0?"":room)+room_detail, name: location_name }});
             
             is_in = false;
+            let c_len = refined_courses[course.subject].course_types.length + 1;
             for (let course_type of refined_courses[course.subject].course_types) {
-                let [tp1, tp2] = course_type;
+                let [tp1, tp2] = course_type.type;
                 if (tp1==type1 && tp2==type2) {
                     is_in = true;
                     break;
                 }
             }
             if (!is_in)
-                refined_courses[course.subject].course_types.push([type1, type2]);
+                refined_courses[course.subject].course_types.push({"idx":c_len, "type":[type1, type2]});
             
             is_in = false;
             let cert = cert_type!=null?cert_type + " " + cert_name:"";
@@ -89,7 +88,7 @@ const data = async function(req, res) {
                 credit_planned: credit_planned,
                 professors: [professor],
                 timetables: [{ idx: 1, day: day, start:start, end: end, loc: { location: b+" "+(building==0?"":("00"+building).slice(-2))+(room==0?"":room)+room_detail, name: location_name }}],
-                course_types: [[type1, type2]],
+                course_types: [{"idx":1,"type":[type1, type2]}],
                 certifications: [cert_type!=null?cert_type + " " + cert_name:""]
             };
         }
