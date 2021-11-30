@@ -3,7 +3,7 @@ const { int_to_day, int_to_building } = require('../functions/function');
 
 const data = async function(req, res) {
     console.log('/course/data')
-    let { department } = req.query;
+    let { dept } = req.query;
     // department = 8007;
     let SELECT_course_sql = 'SELECT c.subject,\
                         c.type1 AS course_type1, c.type2 AS course_type2,\
@@ -23,7 +23,7 @@ const data = async function(req, res) {
                     LEFT JOIN `certification_details` AS cd ON ce.certification_detail=cd.idx\
                     WHERE c.department = ?';
                 
-    let SELECT_course_sql_params = [department];
+    let SELECT_course_sql_params = [dept];
     let connection = await db.getConnection();
     let [courses, fields] = await connection.query(SELECT_course_sql, SELECT_course_sql_params);
     await connection.release();

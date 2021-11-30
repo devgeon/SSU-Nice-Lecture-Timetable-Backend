@@ -10,6 +10,7 @@ app.get('/', function (req, res) {
 });
 
 app.use('/course', require('./course'));
+app.use('/user', require('./user'));
 
 
 // catch 404 and forward to error handler
