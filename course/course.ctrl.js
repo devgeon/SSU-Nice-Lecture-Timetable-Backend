@@ -2,8 +2,8 @@ const { db } = require('../constants/constants');
 const { int_to_day, int_to_building } = require('../functions/function');
 
 const data = async function(req, res) {
-    console.log('/course/data')
-    let { type, dept } = req.query;
+    // console.log('/course/data')
+    let { page, type, dept, word } = req.query;
     // department = 8007;
     let SELECT_course_sql = 'SELECT c.subject,\
                         c.type1 AS course_type1, c.type2 AS course_type2,\
@@ -24,10 +24,32 @@ const data = async function(req, res) {
     
     let SELECT_course_sql_params = [];
 
-    switch (type) {
+    switch (page) {
         case "hakbu":
+        case "daehakwon":
+        case "yeonkye":
+        case "yoonghap":
+        case "tajeongong":
             SELECT_course_sql += ' WHERE c.department = ?';
             SELECT_course_sql_params.push(dept);
+            break;
+        case "kyopill":
+            SELECT_course_sql += ' WHERE (c.type1 = 2 AND c.type2 = 2) OR (c.type1 = 3 AND c.type2 = 0)';
+            break;
+        case "kyosun":
+            SELECT_course_sql += ' WHERE c.type1 = 2 AND c.type2 = 3';
+            break;
+        case "search":
+            switch (type) {
+                case "name":
+                    SELECT_course_sql += ' WHERE s.name LIKE ?';
+                    SELECT_course_sql_params.push(`%${word}%`);
+                    break;
+                case "prof":
+                    SELECT_course_sql += ' WHERE p.name LIKE ?';
+                    SELECT_course_sql_params.push(`%${word}%`);
+                    break;
+            }
             break;
         default:
             console.log("Requested all courses.")
