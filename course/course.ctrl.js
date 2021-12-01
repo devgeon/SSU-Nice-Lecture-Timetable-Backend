@@ -3,7 +3,7 @@ const { int_to_day, int_to_building } = require('../functions/function');
 
 const data = async function(req, res) {
     console.log('/course/data')
-    let { dept } = req.query;
+    let { type, dept } = req.query;
     // department = 8007;
     let SELECT_course_sql = 'SELECT c.subject,\
                         c.type1 AS course_type1, c.type2 AS course_type2,\
@@ -20,10 +20,20 @@ const data = async function(req, res) {
                     JOIN `professors` AS p ON t.professor=p.idx\
                     JOIN `locations` AS l ON t.location=l.idx\
                     LEFT JOIN `certifications` AS ce ON s.idx=ce.subject\
-                    LEFT JOIN `certification_details` AS cd ON ce.certification_detail=cd.idx\
-                    WHERE c.department = ?';
+                    LEFT JOIN `certification_details` AS cd ON ce.certification_detail=cd.idx';
+    
+    let SELECT_course_sql_params = [];
+
+    switch (type) {
+        case "hakbu":
+            SELECT_course_sql += ' WHERE c.department = ?';
+            SELECT_course_sql_params.push(dept);
+            break;
+        default:
+            console.log("Requested all courses.")
+    }
                 
-    let SELECT_course_sql_params = [dept];
+    
     let connection = await db.getConnection();
     let [courses, fields] = await connection.query(SELECT_course_sql, SELECT_course_sql_params);
     await connection.release();
